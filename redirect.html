@@ -1,0 +1,65 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Assigning Your New Year Promise…</title>
+  <meta name="description" content="Assigning a unique New Year promise for this device." />
+  <style>
+    html,body{height:100%}
+    body{
+      margin:0; display:grid; place-items:center; font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,Arial;
+      background:#0f172a; color:#e5e7eb;
+    }
+    .box{max-width:560px; padding:24px; border:1px solid rgba(255,255,255,.12); border-radius:14px;
+         background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));}
+    h1{font-size:clamp(20px,4vw,28px); margin:0 0 6px}
+    p{margin:.5rem 0; color:#cbd5e1}
+    .muted{color:#94a3b8; font-size:14px}
+  </style>
+</head>
+<body>
+  <div class="box">
+    <h1>Preparing your promise…</h1>
+    <p class="muted">Please wait while we pick your New Year verse.</p>
+  </div>
+
+  <script>
+    // --- Configuration -------------------------------------------------------
+    const TOTAL = 50;                 // number of verses in index.html
+    const KEY   = 'assigned_verse_v1';// localStorage key
+    const BASE  = './index.html';     // where deep link lives (same folder)
+
+    // Read query, e.g., ?new=1 to force reassignment
+    const params = new URLSearchParams(location.search);
+    const forceNew = params.get('new') === '1';
+
+    function pickRandomVerseId(){
+      // 1..TOTAL (not 0..TOTAL-1) to make links cleaner: ?v=1..50
+      return Math.floor(Math.random() * TOTAL) + 1;
+    }
+
+    (function main(){
+      try {
+        let id = localStorage.getItem(KEY);
+        if (forceNew || !id) {
+          id = String(pickRandomVerseId());
+          localStorage.setItem(KEY, id);
+        }
+        // Redirect as a *navigation* (no back button loop)
+        const url = new URL(BASE, location.href);
+        url.searchParams.set('v', id);
+        location.replace(url.toString());
+      } catch (e) {
+        // If storage blocked (private mode, etc.), just fall back to a random deep link
+        const id = String(pickRandomVerseId());
+        const url = new URL(BASE, location.href);
+        url.searchParams.set('v', id);
+        location.replace(url.toString());
+      }
+    })();
+  </script>
+</body>
+</html>
+``
